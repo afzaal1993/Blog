@@ -2,6 +2,7 @@
 using backend.Models.Domain;
 using backend.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repository
 {
@@ -22,14 +23,32 @@ namespace backend.Repository
             };
 
             await _appDbContext.Categories.AddAsync(category);
-            await _appDbContext.SaveChangesAsync();
+            int result = await _appDbContext.SaveChangesAsync();
 
-            return true;
+            return result > 0;
         }
 
-        public Task<IActionResult> UpdateCategory(UpdateCategoryRequestDto request)
+        public async Task<List<GetCategoryDto>> GetAllCategories()
         {
-            throw new NotImplementedException();
+            var categories = await _appDbContext.Categories.Select(category =>  new GetCategoryDto {Id = category.Id, Name = category.Name, UrlHandle = category.UrlHandle }).ToListAsync();
+
+            return categories;
+        }
+
+        public async Task<bool> UpdateCategory(UpdateCategoryRequestDto request)
+        {
+            var category = await _appDbContext.Categories.FindAsync(request.Id);
+
+            if(category == null) return false;
+
+            category.Name = request.Name;
+            category.UrlHandle = request.UrlHandle;
+
+            _appDbContext.Categories.Update(category);
+
+            int result = await _appDbContext.SaveChangesAsync();
+
+            return result > 0;
         }
     }
 }

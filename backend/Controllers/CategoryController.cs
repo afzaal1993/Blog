@@ -1,11 +1,13 @@
-﻿using backend.Models.DTO;
+﻿using backend.Models.Domain;
+using backend.Models.DTO;
 using backend.Repository;
+using backend.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
@@ -17,13 +19,21 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCategory(CreateCategoryRequestDto request)
+        public async Task<IActionResult> Create(CreateCategoryRequestDto request)
         {
             var result = await _categoryRepo.AddCategory(request);
 
-            if (result) return Created();
+            if (result) return Ok("Category created successfully");
 
-            else return BadRequest();
+            return BadRequest("Category creation failed");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _categoryRepo.GetAllCategories();
+
+            return Ok(result);
         }
     }
 }

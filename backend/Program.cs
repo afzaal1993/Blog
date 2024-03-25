@@ -1,19 +1,26 @@
 using backend.Data;
+using backend.Repository;
+using backend.Utils;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(new ApiResponseFilter());
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BlogConnctionString"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteConnectionString"));
 });
+
+builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
 
 var app = builder.Build();
 
@@ -23,6 +30,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionMiddleware();
 
 app.UseHttpsRedirection();
 
