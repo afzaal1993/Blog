@@ -30,19 +30,45 @@ namespace backend.Repository
 
         public async Task<List<GetCategoryDto>> GetAllCategories()
         {
-            var categories = await _appDbContext.Categories.Select(category =>  new GetCategoryDto {Id = category.Id, Name = category.Name, UrlHandle = category.UrlHandle }).ToListAsync();
+            var categories = await _appDbContext.Categories.Select(category =>
+                new GetCategoryDto
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    UrlHandle = category.UrlHandle,
+                    IsActive = category.IsActive
+                }).ToListAsync();
 
             return categories;
+        }
+
+        public async Task<GetCategoryDto> GetCategoryById(Guid id)
+        {
+            var category = await _appDbContext.Categories.FindAsync(id);
+
+            if (category == null) return null;
+
+            var categoryDto =
+                new GetCategoryDto
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    IsActive = category.IsActive,
+                    UrlHandle = category.UrlHandle
+                };
+
+            return categoryDto;
         }
 
         public async Task<bool> UpdateCategory(UpdateCategoryRequestDto request)
         {
             var category = await _appDbContext.Categories.FindAsync(request.Id);
 
-            if(category == null) return false;
+            if (category == null) return false;
 
             category.Name = request.Name;
             category.UrlHandle = request.UrlHandle;
+            category.IsActive = request.IsActive;
 
             _appDbContext.Categories.Update(category);
 

@@ -9,5 +9,6 @@ namespace backend.Repository
         public Task<bool> AddCategory(CreateCategoryRequestDto request);
         public Task<bool> UpdateCategory(UpdateCategoryRequestDto request);
         public Task<List<GetCategoryDto>> GetAllCategories();
+        public Task<GetCategoryDto> GetCategoryById(Guid id);
     }
 }
