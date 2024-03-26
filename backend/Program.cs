@@ -20,7 +20,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("SQLiteConnectionString"));
 });
 
-builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<CategoryService>();
 
 var app = builder.Build();
 
